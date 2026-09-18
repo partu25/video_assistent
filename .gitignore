@@ -1,0 +1,34 @@
+# Environment variables (SECURITY RISK - DO NOT COMMIT)
+.env
+.env.*
+*.env
+
+# Virtual environment
+myenv/
+venv/
+env/
+ENV/
+
+# Python cache & compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Downloaded media & chunks
+downloades/
+*.wav
+*.mp3
+*.mp4
+*.m4a
+
+# Vector store cache
+.chroma/
+chroma_db/
+*.sqlite3
+
+# System & IDE files
+.DS_Store
+.vscode/
+.idea/
