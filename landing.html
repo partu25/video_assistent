@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Video Assistant — Meeting Intelligence</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            syne: ['Syne', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#1e1b4b',
+            },
+            cyanAccent: '#0891b2',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    .grid-bg {
+      background-image: 
+        linear-gradient(rgba(79, 70, 229, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79, 70, 229, 0.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .glass-card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #1e1b4b 0%, #4f46e5 50%, #0891b2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body class="font-sans antialiased grid-bg min-h-screen flex flex-col">
+
+  <!-- ================= NAVBAR ================= -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <span class="text-2xl">🎬</span>
+        <div>
+          <span class="font-syne font-extrabold text-lg text-slate-900 tracking-tight">AI Video Assistant</span>
+          <span class="hidden sm:inline-block ml-2 text-[10px] font-mono font-bold tracking-widest uppercase bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded border border-indigo-200">
+            Meeting Intelligence
+          </span>
+        </div>
+      </div>
+
+      <nav class="hidden md:flex items-center space-x-6 text-sm font-semibold text-slate-600">
+        <a href="#features" class="hover:text-indigo-600 transition">Features</a>
+        <a href="#demo" class="hover:text-indigo-600 transition">UI Preview</a>
+        <a href="#architecture" class="hover:text-indigo-600 transition">Architecture</a>
+        <a href="#downloads" class="hover:text-indigo-600 transition">Downloads</a>
+      </nav>
+
+      <div class="flex items-center space-x-3">
+        <span class="hidden lg:flex items-center text-xs font-mono text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">
+          Owner: <strong class="ml-1 text-slate-800">Bhavya Chaniyara</strong>
+        </span>
+        <a href="http://localhost:8501" target="_blank" class="inline-flex items-center space-x-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-lg shadow-sm transition">
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          <span>Open App</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= HERO SECTION ================= -->
+  <main class="flex-grow">
+    <section class="pt-12 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+      
+      <!-- Top Announcement Badge -->
+      <div class="inline-flex items-center space-x-2 bg-indigo-50/90 border border-indigo-200 px-3.5 py-1.5 rounded-full text-xs font-medium text-indigo-700 mb-6">
+        <span class="flex h-2 w-2 rounded-full bg-indigo-600 animate-pulse"></span>
+        <span>Dual Speech-to-Text: OpenAI Whisper + Sarvam AI</span>
+        <span class="text-indigo-400">|</span>
+        <span class="font-mono text-[11px]">Mistral AI + ChromaDB RAG</span>
+      </div>
+
+      <!-- Main Headline -->
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-syne font-extrabold tracking-tight leading-tight max-w-4xl mx-auto mb-6">
+        Transform Video Meetings into <span class="gradient-text">Structured Intelligence</span>.
+      </h1>
+
+      <!-- Subtitle -->
+      <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto mb-8 font-normal leading-relaxed">
+        Ingest any YouTube URL or audio/video file. Automatically generate executive summaries, action items, key decisions, and chat interactively with your transcript using local vector search.
+      </p>
+
+      <!-- CTA Buttons -->
+      <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-4">
+        <a href="http://localhost:8501" target="_blank" class="inline-flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3.5 rounded-xl shadow-md hover:shadow-indigo-500/25 transition">
+          <i data-lucide="external-link" class="w-4 h-4"></i>
+          <span>Launch Web Assistant (localhost:8501)</span>
+        </a>
+        <a href="#quickstart" class="inline-flex items-center space-x-2 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-semibold px-5 py-3.5 rounded-xl transition">
+          <i data-lucide="terminal" class="w-4 h-4"></i>
+          <span>CLI & Launcher Guide</span>
+        </a>
+        <a href="AI_Video_Assistant_Documentation.pdf" download class="inline-flex items-center space-x-2 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-semibold px-5 py-3.5 rounded-xl shadow-sm transition">
+          <i data-lucide="file-text" class="w-4 h-4 text-indigo-600"></i>
+          <span>PDF Report</span>
+        </a>
+        <a href="AI_Video_Assistant_Presentation.pptx" download class="inline-flex items-center space-x-2 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-semibold px-5 py-3.5 rounded-xl shadow-sm transition">
+          <i data-lucide="presentation" class="w-4 h-4 text-cyan-600"></i>
+          <span>PPTX</span>
+        </a>
+      </div>
+
+      <!-- Live Server Hint -->
+      <div class="mb-8 flex items-center justify-center text-xs font-mono text-slate-500 gap-2">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span>Click <strong>"Launch Web Assistant"</strong> to open directly. If not running yet, double-click <strong class="text-indigo-600">Launch_Assistant.command</strong> or run <code class="bg-slate-100 px-1 py-0.5 rounded text-slate-800">streamlit run app.py</code></span>
+      </div>
+
+      <!-- Project Metadata Pill -->
+      <div class="inline-flex flex-wrap items-center justify-center gap-4 text-xs font-mono text-slate-500 bg-white/70 backdrop-blur px-5 py-2.5 rounded-full border border-slate-200 shadow-sm">
+        <span class="flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5 text-indigo-600"></i> Owner: <strong class="text-slate-800 font-semibold">Bhavya Chaniyara</strong></span>
+        <span>•</span>
+        <span class="flex items-center gap-1.5"><i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i> Status: <strong class="text-emerald-700 font-semibold">Verified & Working</strong></span>
+        <span>•</span>
+        <span class="flex items-center gap-1.5"><i data-lucide="layers" class="w-3.5 h-3.5 text-cyan-600"></i> Python 3.12 & Streamlit</span>
+      </div>
+
+      <!-- ================= INTERACTIVE PREVIEW TABS ================= -->
+      <div id="demo" class="mt-14 max-w-5xl mx-auto text-left">
+        <div class="bg-white rounded-2xl border border-slate-300 shadow-xl overflow-hidden">
+          
+          <!-- Tab Bar -->
+          <div class="flex flex-wrap items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-3 gap-2">
+            <div class="flex space-x-2">
+              <span class="w-3 h-3 rounded-full bg-rose-400"></span>
+              <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+              <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+              <span class="text-xs font-mono text-slate-400 ml-2">http://localhost:8501 — AI Video Assistant</span>
+            </div>
+
+            <div class="flex items-center space-x-1.5" id="tabButtons">
+              <button onclick="switchTab(0)" id="tabBtn0" class="tab-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white shadow-sm transition">
+                1. Input & Ready
+              </button>
+              <button onclick="switchTab(1)" id="tabBtn1" class="tab-btn px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:bg-slate-200 transition">
+                2. Summary & Transcript
+              </button>
+              <button onclick="switchTab(2)" id="tabBtn2" class="tab-btn px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:bg-slate-200 transition">
+                3. Decisions & RAG Chat
+              </button>
+            </div>
+          </div>
+
+          <!-- Preview Images -->
+          <div class="relative bg-slate-100 p-2 sm:p-4">
+            <div id="tabContent0" class="tab-content block">
+              <img src="assets/screenshot_landing.png" alt="Landing View" class="w-full h-auto rounded-lg border border-slate-200 shadow-sm">
+              <p class="mt-2 text-xs text-slate-500 font-mono text-center">Screen 1: Ingestion Sidebar, Language Selector (English/Hinglish), and Ready to Analyse State.</p>
+            </div>
+            <div id="tabContent1" class="tab-content hidden">
+              <img src="assets/screenshot_summary.png" alt="Summary View" class="w-full h-auto rounded-lg border border-slate-200 shadow-sm">
+              <p class="mt-2 text-xs text-slate-500 font-mono text-center">Screen 2: Automatically generated Session Title, Structured Executive Summary & Full Transcript Box.</p>
+            </div>
+            <div id="tabContent2" class="tab-content hidden">
+              <img src="assets/screenshot_chat.png" alt="RAG Chat View" class="w-full h-auto rounded-lg border border-slate-200 shadow-sm">
+              <p class="mt-2 text-xs text-slate-500 font-mono text-center">Screen 3: Action Items with Owners, Key Decisions, Open Questions & Interactive RAG Q&A Chat.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ================= VALUE STATS ================= -->
+    <section class="bg-white border-y border-slate-200 py-10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <div class="p-4 border-r border-slate-100 last:border-0">
+            <div class="text-3xl sm:text-4xl font-syne font-extrabold text-indigo-600 mb-1">90%+</div>
+            <div class="text-xs uppercase tracking-wider font-mono text-slate-500">Meeting Review Time Saved</div>
+          </div>
+          <div class="p-4 border-r border-slate-100 last:border-0">
+            <div class="text-3xl sm:text-4xl font-syne font-extrabold text-cyan-600 mb-1">Dual STT</div>
+            <div class="text-xs uppercase tracking-wider font-mono text-slate-500">Whisper (EN) + Sarvam (Hinglish)</div>
+          </div>
+          <div class="p-4 border-r border-slate-100 last:border-0">
+            <div class="text-3xl sm:text-4xl font-syne font-extrabold text-slate-900 mb-1">Zero Hallucination</div>
+            <div class="text-xs uppercase tracking-wider font-mono text-slate-500">ChromaDB Vector Retrieval</div>
+          </div>
+          <div class="p-4">
+            <div class="text-3xl sm:text-4xl font-syne font-extrabold text-emerald-600 mb-1">100% Reliable</div>
+            <div class="text-xs uppercase tracking-wider font-mono text-slate-500">429 Rate-Limit Exponential Retries</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FEATURES GRID ================= -->
+    <section id="features" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
+          Core Capabilities
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-syne font-extrabold text-slate-900 mt-4 mb-4">
+          Engineered for Deep Meeting Intelligence
+        </h2>
+        <p class="text-slate-600 text-sm sm:text-base">
+          From multi-gigabyte audio extraction to semantic vector search, every layer is built for accuracy and speed.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Card 1 -->
+        <div class="glass-card rounded-2xl p-6 transition hover:border-indigo-500 hover:shadow-lg">
+          <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 mb-4">
+            <i data-lucide="mic" class="w-5 h-5"></i>
+          </div>
+          <h3 class="font-syne font-bold text-lg text-slate-900 mb-2">Dual Speech Recognition</h3>
+          <p class="text-slate-600 text-sm leading-relaxed mb-4">
+            Local OpenAI Whisper handles clear English audio, while Sarvam AI transcribes and translates Hinglish/Hindi speech to English using optimized 16kHz mono audio slices.
+          </p>
+          <span class="inline-block text-[11px] font-mono font-medium text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">
+            Whisper · Sarvam AI API
+          </span>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="glass-card rounded-2xl p-6 transition hover:border-indigo-500 hover:shadow-lg">
+          <div class="w-10 h-10 rounded-xl bg-cyan-50 flex items-center justify-center text-cyan-600 mb-4">
+            <i data-lucide="file-check-2" class="w-5 h-5"></i>
+          </div>
+          <h3 class="font-syne font-bold text-lg text-slate-900 mb-2">Map-Reduce Summaries</h3>
+          <p class="text-slate-600 text-sm leading-relaxed mb-4">
+            Splits large transcripts into overlapping chunks, generates partial summaries, and synthesizes an executive multi-bullet meeting breakdown with automated titles.
+          </p>
+          <span class="inline-block text-[11px] font-mono font-medium text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded">
+            Mistral AI · Map-Reduce Chain
+          </span>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="glass-card rounded-2xl p-6 transition hover:border-indigo-500 hover:shadow-lg">
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 mb-4">
+            <i data-lucide="check-square" class="w-5 h-5"></i>
+          </div>
+          <h3 class="font-syne font-bold text-lg text-slate-900 mb-2">Action Items & Decisions</h3>
+          <p class="text-slate-600 text-sm leading-relaxed mb-4">
+            Automatically isolates tasks with owners and deadlines, records key agreements, and surfaces unresolved questions requiring follow-up.
+          </p>
+          <span class="inline-block text-[11px] font-mono font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+            Structured Extraction
+          </span>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="glass-card rounded-2xl p-6 transition hover:border-indigo-500 hover:shadow-lg">
+          <div class="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center text-violet-600 mb-4">
+            <i data-lucide="database" class="w-5 h-5"></i>
+          </div>
+          <h3 class="font-syne font-bold text-lg text-slate-900 mb-2">ChromaDB Vector Store</h3>
+          <p class="text-slate-600 text-sm leading-relaxed mb-4">
+            Embeds transcripts using <code>sentence-transformers/all-MiniLM-L6-v2</code> for instant, low-latency semantic similarity search across hours of video recordings.
+          </p>
+          <span class="inline-block text-[11px] font-mono font-medium text-violet-700 bg-violet-50 px-2 py-0.5 rounded">
+            ChromaDB · Hugging Face
+          </span>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="glass-card rounded-2xl p-6 transition hover:border-indigo-500 hover:shadow-lg">
+          <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 mb-4">
+            <i data-lucide="message-square" class="w-5 h-5"></i>
+          </div>
+          <h3 class="font-syne font-bold text-lg text-slate-900 mb-2">Chat with your Meeting</h3>
+          <p class="text-slate-600 text-sm leading-relaxed mb-4">
+            Interactive RAG pipeline answers specific questions strictly from verified transcript context, preventing generic LLM hallucinations.
+          </p>
+          <span class="inline-block text-[11px] font-mono font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded">
+            LangChain LCEL RAG
+          </span>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="glass-card rounded-2xl p-6 transition hover:border-indigo-500 hover:shadow-lg">
+          <div class="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600 mb-4">
+            <i data-lucide="shield-alert" class="w-5 h-5"></i>
+          </div>
+          <h3 class="font-syne font-bold text-lg text-slate-900 mb-2">429 Rate-Limit Shield</h3>
+          <p class="text-slate-600 text-sm leading-relaxed mb-4">
+            Integrated <code>invoke_with_retry</code> wrapper with exponential backoff ensures pipeline stability under strict free-tier Mistral AI and Sarvam AI quotas.
+          </p>
+          <span class="inline-block text-[11px] font-mono font-medium text-rose-700 bg-rose-50 px-2 py-0.5 rounded">
+            Exponential Backoff
+          </span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= ARCHITECTURE SECTION ================= -->
+    <section id="architecture" class="py-16 bg-slate-900 text-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-12">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-400 bg-indigo-950/80 px-3 py-1 rounded-full border border-indigo-800">
+            System Pipeline
+          </span>
+          <h2 class="text-3xl font-syne font-extrabold mt-4 mb-3">5-Stage Execution Flow</h2>
+          <p class="text-slate-400 text-sm">How raw YouTube links or local MP4/WAV files turn into actionable answers.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+          
+          <div class="bg-slate-800/80 border border-slate-700 p-5 rounded-xl">
+            <div class="text-xs font-mono text-indigo-400 font-bold mb-1">STAGE 01</div>
+            <h4 class="font-syne font-bold text-white mb-2">Audio Ingestion</h4>
+            <p class="text-xs text-slate-400"><code>yt-dlp</code> downloads YouTube audio. <code>pydub</code> converts local media to 16kHz mono WAV chunks.</p>
+          </div>
+
+          <div class="bg-slate-800/80 border border-slate-700 p-5 rounded-xl">
+            <div class="text-xs font-mono text-cyan-400 font-bold mb-1">STAGE 02</div>
+            <h4 class="font-syne font-bold text-white mb-2">Dual STT</h4>
+            <p class="text-xs text-slate-400">English routed to Whisper; Hinglish sliced to 25s pieces for Sarvam translation with retries.</p>
+          </div>
+
+          <div class="bg-slate-800/80 border border-slate-700 p-5 rounded-xl">
+            <div class="text-xs font-mono text-emerald-400 font-bold mb-1">STAGE 03</div>
+            <h4 class="font-syne font-bold text-white mb-2">LLM Synthesis</h4>
+            <p class="text-xs text-slate-400">Mistral AI generates an 8-word Title, multi-bullet Summary, Action Items, and Key Decisions.</p>
+          </div>
+
+          <div class="bg-slate-800/80 border border-slate-700 p-5 rounded-xl">
+            <div class="text-xs font-mono text-violet-400 font-bold mb-1">STAGE 04</div>
+            <h4 class="font-syne font-bold text-white mb-2">Vector Indexing</h4>
+            <p class="text-xs text-slate-400">Transcript chunks embedded via HuggingFace MiniLM and indexed into ChromaDB vector store.</p>
+          </div>
+
+          <div class="bg-slate-800/80 border border-slate-700 p-5 rounded-xl">
+            <div class="text-xs font-mono text-amber-400 font-bold mb-1">STAGE 05</div>
+            <h4 class="font-syne font-bold text-white mb-2">Interactive Chat</h4>
+            <p class="text-xs text-slate-400">Streamlit UI allows natural language Q&A retrieved strictly from vector context in real-time.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= QUICK START & COMMANDS ================= -->
+    <section id="quickstart" class="py-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
+          How to Run
+        </span>
+        <h2 class="text-3xl font-syne font-extrabold text-slate-900 mt-4">Run in 2 Simple Steps</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Web Mode -->
+        <div class="glass-card rounded-2xl p-6 border-indigo-200">
+          <div class="flex items-center space-x-2 text-indigo-600 mb-3 font-syne font-bold">
+            <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+            <span>Option A: Streamlit Web UI (Recommended)</span>
+          </div>
+          <p class="text-xs text-slate-600 mb-4">Launches the modern web dashboard on localhost:</p>
+          <div class="bg-slate-900 text-slate-100 rounded-xl p-3 font-mono text-xs flex justify-between items-center">
+            <code>streamlit run app.py</code>
+            <button onclick="copyCmd('streamlit run app.py')" class="text-slate-400 hover:text-white text-[11px] bg-slate-800 px-2 py-1 rounded transition">Copy</button>
+          </div>
+          <p class="text-[11px] text-slate-500 mt-3 font-mono">Accessible at: http://localhost:8501</p>
+        </div>
+
+        <!-- CLI Mode -->
+        <div class="glass-card rounded-2xl p-6">
+          <div class="flex items-center space-x-2 text-slate-800 mb-3 font-syne font-bold">
+            <i data-lucide="terminal" class="w-5 h-5"></i>
+            <span>Option B: Terminal CLI Interface</span>
+          </div>
+          <p class="text-xs text-slate-600 mb-4">Run directly in your command line with an interactive chat loop:</p>
+          <div class="bg-slate-900 text-slate-100 rounded-xl p-3 font-mono text-xs flex justify-between items-center">
+            <code>python main.py</code>
+            <button onclick="copyCmd('python main.py')" class="text-slate-400 hover:text-white text-[11px] bg-slate-800 px-2 py-1 rounded transition">Copy</button>
+          </div>
+          <p class="text-[11px] text-slate-500 mt-3 font-mono">Prompts for YouTube URL / file path in terminal.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= DOWNLOADS SECTION ================= -->
+    <section id="downloads" class="py-16 bg-slate-100 border-t border-slate-200">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-2xl sm:text-3xl font-syne font-extrabold text-slate-900 mb-2">Project Resources & Downloads</h2>
+        <p class="text-slate-600 text-sm mb-8">All documentation, presentation slides, and source code packages ready to export.</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          
+          <a href="AI_Video_Assistant_Documentation.pdf" download class="glass-card p-6 rounded-2xl hover:border-indigo-500 hover:shadow-md transition text-left flex items-start space-x-4">
+            <div class="p-3 bg-red-50 text-red-600 rounded-xl">
+              <i data-lucide="file-text" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <div class="font-bold text-slate-900 text-sm">Documentation PDF</div>
+              <div class="text-xs text-slate-500 mt-0.5">8-Page Technical Report</div>
+              <span class="inline-flex items-center text-xs font-semibold text-indigo-600 mt-3">Download PDF →</span>
+            </div>
+          </a>
+
+          <a href="AI_Video_Assistant_Presentation.pptx" download class="glass-card p-6 rounded-2xl hover:border-cyan-500 hover:shadow-md transition text-left flex items-start space-x-4">
+            <div class="p-3 bg-cyan-50 text-cyan-600 rounded-xl">
+              <i data-lucide="presentation" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <div class="font-bold text-slate-900 text-sm">PowerPoint Presentation</div>
+              <div class="text-xs text-slate-500 mt-0.5">8 Widescreen Slides (.pptx)</div>
+              <span class="inline-flex items-center text-xs font-semibold text-cyan-600 mt-3">Download PPTX →</span>
+            </div>
+          </a>
+
+          <a href="video_assistant_project.zip" download class="glass-card p-6 rounded-2xl hover:border-emerald-500 hover:shadow-md transition text-left flex items-start space-x-4">
+            <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+              <i data-lucide="archive" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <div class="font-bold text-slate-900 text-sm">Source Code ZIP</div>
+              <div class="text-xs text-slate-500 mt-0.5">Clean Package (867 KB)</div>
+              <span class="inline-flex items-center text-xs font-semibold text-emerald-600 mt-3">Download ZIP →</span>
+            </div>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="bg-white border-t border-slate-200 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+      <div class="flex items-center space-x-2">
+        <span class="font-syne font-extrabold text-sm text-slate-800">AI Video Assistant</span>
+        <span>•</span>
+        <span>Created & Owned by <strong class="text-slate-800 font-semibold">Bhavya Chaniyara</strong></span>
+      </div>
+      <div>
+        <span>Python 3.12 · Streamlit · LangChain · Mistral AI · Whisper · Sarvam AI · ChromaDB</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= JAVASCRIPT ================= -->
+  <script>
+    lucide.createIcons();
+
+    function switchTab(index) {
+      for (let i = 0; i < 3; i++) {
+        const content = document.getElementById('tabContent' + i);
+        const btn = document.getElementById('tabBtn' + i);
+        if (i === index) {
+          content.classList.remove('hidden');
+          content.classList.add('block');
+          btn.classList.remove('text-slate-600', 'hover:bg-slate-200');
+          btn.classList.add('bg-indigo-600', 'text-white', 'shadow-sm');
+        } else {
+          content.classList.add('hidden');
+          content.classList.remove('block');
+          btn.classList.add('text-slate-600', 'hover:bg-slate-200');
+          btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-sm');
+        }
+      }
+    }
+
+    function copyCmd(cmd) {
+      navigator.clipboard.writeText(cmd);
+      alert('Copied command: ' + cmd);
+    }
+  </script>
+
+</body>
+</html>

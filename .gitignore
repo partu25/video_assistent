@@ -26,6 +26,7 @@ downloades/
 # Vector store cache
 .chroma/
 chroma_db/
+vector_db/
 *.sqlite3
 
 # System & IDE files
