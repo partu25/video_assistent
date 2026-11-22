@@ -1,46 +1,17 @@
-#Actionableitems , decision , questions 
-
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnablePassthrough, RunnableLambda
-from core.llm_factory import get_llm, invoke_with_retry
+# Action items, key decisions, and open questions extraction
+from core.meeting_analyzer import analyze_transcript
 
 
-def build_chain(system_prompt : str):
-    llm = get_llm(temperature=0.2)
-    return (
-        RunnablePassthrough() | RunnableLambda(lambda x : {"text" : x}) |ChatPromptTemplate.from_messages([
-        ("system", system_prompt),
-        ("human","{text}"),
-    ]) | llm |StrOutputParser()
-    )
-
-def extract_action_items(transcript:str)->str:
-    chain = build_chain(
-         "You are an expert meeting analyst. From the meeting transcript, "
-        "extract all action items. For each provide:\n"
-        "- Task description\n"
-        "- Owner (who is responsible)\n"
-        "- Deadline (if mentioned, else write 'Not specified')\n\n"
-        "Format as a numbered list. If none found say 'No action items found.'"
-    )
-
-    return invoke_with_retry(chain, transcript)
+def extract_action_items(transcript: str) -> str:
+    data = analyze_transcript(transcript)
+    return data.get("action_items", "No action items found.")
 
 
 def extract_key_decisions(transcript: str) -> str:
-    chain = build_chain(
-        "You are an expert meeting analyst. From the meeting transcript, "
-        "extract all key decisions made. Format as a numbered list. "
-        "If none found say 'No key decisions found.'"
-    )
-    return invoke_with_retry(chain, transcript)
+    data = analyze_transcript(transcript)
+    return data.get("key_decisions", "No key decisions found.")
 
 
 def extract_questions(transcript: str) -> str:
-    chain = build_chain(
-        "From the meeting transcript, extract all unresolved questions "
-        "or topics needing follow-up. Format as a numbered list. "
-        "If none found say 'No open questions found.'"
-    )
-    return invoke_with_retry(chain, transcript)
+    data = analyze_transcript(transcript)
+    return data.get("open_questions", "No open questions found.")
