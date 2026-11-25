@@ -8,7 +8,7 @@ os.makedirs(DOWNLOAD_DIR,exist_ok = True)
 def download_youtube_audio(url :str) ->str:
     output_path = os.path.join(DOWNLOAD_DIR, "%(title)s.%(ext)s")
     ydl_opts = {
-        "format": "bestaudio/best",
+        "format": "ba/b/18",
         "outtmpl": output_path,
         "postprocessors": [
             {
@@ -19,12 +19,8 @@ def download_youtube_audio(url :str) ->str:
         ],
         "extractor_args": {
             "youtube": {
-                "player-client": ["mweb", "android", "tv", "web"]
+                "player_client": ["android"]
             }
-        },
-        "http_headers": {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-            "Accept-Language": "en-US,en;q=0.9",
         },
         "nocheckcertificate": True,
         "noplaylist": True,
@@ -33,8 +29,12 @@ def download_youtube_audio(url :str) ->str:
     }
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
-        filename = ydl.prepare_filename(info).replace(".webm", ".wav").replace(".m4a", ".wav")
-    return filename
+        filename = ydl.prepare_filename(info)
+        base, _ = os.path.splitext(filename)
+        wav_path = base + ".wav"
+        if os.path.exists(wav_path):
+            return wav_path
+        return filename.replace(".webm", ".wav").replace(".m4a", ".wav").replace(".mp4", ".wav")
 
 
 

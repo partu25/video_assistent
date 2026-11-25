@@ -357,27 +357,7 @@ with st.sidebar:
     st.markdown("---")
 
     st.markdown('<span class="badge badge-purple">Input</span>', unsafe_allow_html=True)
-    input_mode = st.radio(
-        "Choose Input Method",
-        ["📁 Upload Audio/Video", "🔗 YouTube URL"],
-        index=0,
-        horizontal=True
-    )
-
-    uploaded_file = None
-    url_input = ""
-
-    if input_mode == "📁 Upload Audio/Video":
-        uploaded_file = st.file_uploader(
-            "Upload meeting recording",
-            type=["mp4", "mp3", "wav", "m4a", "webm", "mov", "aac"],
-            help="Upload an audio or video file directly from your computer."
-        )
-    else:
-        url_input = st.text_input(
-            "YouTube URL",
-            placeholder="https://www.youtube.com/watch?v=..."
-        )
+    source = st.text_input("YouTube URL", placeholder="https://www.youtube.com/watch?v=...")
 
     language = st.selectbox("Language", ["english", "hinglish"], index=0)
 
@@ -403,92 +383,68 @@ st.markdown("---")
 
 # ── Run Pipeline ────────────────────────────────────────────────────────────────
 if run_btn:
-    source = ""
-    if input_mode == "📁 Upload Audio/Video":
-        if uploaded_file is None:
-            st.error("Please upload an audio or video file first.")
-            st.stop()
-        upload_dir = "uploads"
-        os.makedirs(upload_dir, exist_ok=True)
-        source = os.path.join(upload_dir, uploaded_file.name)
-        with open(source, "wb") as f:
-            f.write(uploaded_file.getbuffer())
+    if not source.strip():
+        st.error("Please enter a YouTube URL.")
     else:
-        if not url_input.strip():
-            st.error("Please enter a YouTube URL.")
-            st.stop()
-        source = url_input.strip()
+        st.session_state.pipeline_done = False
+        st.session_state.result = None
+        st.session_state.chat_history = []
+        st.session_state.pipeline_steps = {}
 
-    st.session_state.pipeline_done = False
-    st.session_state.result = None
-    st.session_state.chat_history = []
-    st.session_state.pipeline_steps = {}
+        progress_placeholder = st.empty()
 
-    progress_placeholder = st.empty()
+        def update_step(key, state):
+            st.session_state.pipeline_steps[key] = state
 
-    def update_step(key, state):
-        st.session_state.pipeline_steps[key] = state
+        try:
+            with progress_placeholder.container():
+                st.info("⚙️ Pipeline running — see sidebar for live status…")
 
-    try:
-        with progress_placeholder.container():
-            st.info("⚙️ Pipeline running — see sidebar for live status…")
+            update_step("audio", "active")
+            chunks = process_input(source)
+            update_step("audio", "done")
 
-        update_step("audio", "active")
-        chunks = process_input(source)
-        update_step("audio", "done")
+            update_step("transcript", "active")
+            transcript = transcribe_all(chunks, language)
+            update_step("transcript", "done")
 
-        update_step("transcript", "active")
-        transcript = transcribe_all(chunks, language)
-        update_step("transcript", "done")
+            update_step("title", "active")
+            title = generate_title(transcript)
+            update_step("title", "done")
 
-        update_step("title", "active")
-        title = generate_title(transcript)
-        update_step("title", "done")
+            update_step("summary", "active")
+            summary = summarize(transcript)
+            update_step("summary", "done")
 
-        update_step("summary", "active")
-        summary = summarize(transcript)
-        update_step("summary", "done")
+            update_step("extract", "active")
+            action_items  = extract_action_items(transcript)
+            decisions     = extract_key_decisions(transcript)
+            questions     = extract_questions(transcript)
+            update_step("extract", "done")
 
-        update_step("extract", "active")
-        action_items  = extract_action_items(transcript)
-        decisions     = extract_key_decisions(transcript)
-        questions     = extract_questions(transcript)
-        update_step("extract", "done")
+            update_step("rag", "active")
+            rag_chain = build_rag_chain(transcript)
+            update_step("rag", "done")
 
-        update_step("rag", "active")
-        rag_chain = build_rag_chain(transcript)
-        update_step("rag", "done")
+            st.session_state.result = {
+                "title": title,
+                "transcript": transcript,
+                "summary": summary,
+                "action_items": action_items,
+                "key_decisions": decisions,
+                "open_questions": questions,
+                "rag_chain": rag_chain,
+            }
+            st.session_state.pipeline_done = True
+            progress_placeholder.success("✅ Analysis complete!")
+            time.sleep(0.5)
+            progress_placeholder.empty()
+            st.rerun()
 
-        st.session_state.result = {
-            "title": title,
-            "transcript": transcript,
-            "summary": summary,
-            "action_items": action_items,
-            "key_decisions": decisions,
-            "open_questions": questions,
-            "rag_chain": rag_chain,
-        }
-        st.session_state.pipeline_done = True
-        progress_placeholder.success("✅ Analysis complete!")
-        time.sleep(0.5)
-        progress_placeholder.empty()
-        st.rerun()
-
-    except Exception as e:
-        for k in ["audio","transcript","title","summary","extract","rag"]:
-            if st.session_state.pipeline_steps.get(k) == "active":
-                st.session_state.pipeline_steps[k] = "pending"
-        err_msg = str(e)
-        if "403" in err_msg or "Forbidden" in err_msg:
-            progress_placeholder.error(
-                "❌ **YouTube 403 Forbidden Error:**\n\n"
-                "YouTube has blocked audio stream downloads from cloud hosting data-center IP addresses (AWS / Streamlit Cloud).\n\n"
-                "💡 **How to proceed:**\n"
-                "1. Download the video/audio onto your computer (or use an online audio downloader).\n"
-                "2. In the sidebar, select **'📁 Upload Audio/Video'**.\n"
-                "3. Drag and drop your audio/video file and click **Analyse**! It runs directly on the server without any YouTube IP restrictions."
-            )
-        else:
+        except Exception as e:
+            for k in ["audio","transcript","title","summary","extract","rag"]:
+                if st.session_state.pipeline_steps.get(k) == "active":
+                    st.session_state.pipeline_steps[k] = "pending"
             progress_placeholder.error(f"❌ Error: {e}")
 
 # ── Results ──────────────────────────────────────────────────────────────────────
