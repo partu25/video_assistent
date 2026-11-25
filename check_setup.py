@@ -35,19 +35,20 @@ def check():
     if os.path.exists(".env"):
         from dotenv import load_dotenv
         load_dotenv()
+        g_key = os.getenv("GROQ_API_KEY", "").strip()
         m_key = os.getenv("MISTRAL_API_KEY", "").strip()
         s_key = os.getenv("SARVAM_API_KEY", "").strip()
-        if m_key and s_key:
-            print("✅ Configured with API Keys")
+        if (g_key or m_key) and s_key:
+            provider = "Groq" if g_key else "Mistral"
+            print(f"✅ Configured with API Keys (LLM: {provider})")
         else:
-            print("⚠️ .env exists but MISTRAL_API_KEY or SARVAM_API_KEY is missing!")
+            print("⚠️ .env exists but LLM key (GROQ_API_KEY or MISTRAL_API_KEY) or SARVAM_API_KEY is missing!")
             all_ok = False
     else:
         print("❌ Missing .env file!")
         print("   👉 Fix: Create a .env file with:")
-        print("      MISTRAL_API_KEY=your_key")
-        print("      SARVAM_API_KEY=your_key")
-        print("      MISTRAL_MODEL=open-mistral-7b")
+        print("      GROQ_API_KEY=your_groq_key")
+        print("      SARVAM_API_KEY=your_sarvam_key")
         all_ok = False
 
     # 4. Package Import Check
