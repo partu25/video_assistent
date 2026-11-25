@@ -1,9 +1,58 @@
 import yt_dlp
 from pydub import AudioSegment
 import os
+import re
 
 DOWNLOAD_DIR = 'downloades'
 os.makedirs(DOWNLOAD_DIR,exist_ok = True)
+
+
+def extract_youtube_video_id(url: str) -> str:
+    """Extract YouTube video ID from various URL formats."""
+    pattern = r'(?:v=|\/|youtu\.be\/|embed\/|shorts\/)([0-9A-Za-z_-]{11})'
+    match = re.search(pattern, url)
+    return match.group(1) if match else ""
+
+
+def get_youtube_transcript_direct(url: str, language: str = "english") -> str:
+    """
+    Attempt to fetch the transcript directly using youtube-transcript-api.
+    Returns full transcript text if successful, or empty string if unavailable.
+    """
+    video_id = extract_youtube_video_id(url)
+    if not video_id:
+        return ""
+
+    try:
+        from youtube_transcript_api import YouTubeTranscriptApi
+        lang_codes = ['en', 'en-US', 'en-GB', 'en-IN']
+        if language == "hinglish":
+            lang_codes = ['hi', 'hi-Latn', 'en', 'en-IN']
+
+        try:
+            transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=lang_codes)
+        except Exception:
+            transcript_obj = YouTubeTranscriptApi.list_transcripts(video_id)
+            transcript_data = None
+            try:
+                transcript_data = transcript_obj.find_transcript(lang_codes)
+            except Exception:
+                try:
+                    transcript_data = transcript_obj.find_generated_transcript(lang_codes)
+                except Exception:
+                    for t in transcript_obj:
+                        transcript_data = t
+                        break
+            if transcript_data:
+                transcript_list = transcript_data.fetch()
+            else:
+                return ""
+
+        full_text = " ".join([entry["text"].strip() for entry in transcript_list if entry.get("text")])
+        return full_text.strip()
+    except Exception as e:
+        print(f"Direct transcript extraction not available: {e}")
+        return ""
 
 def download_youtube_audio(url :str) ->str:
     output_path = os.path.join(DOWNLOAD_DIR, "%(title)s.%(ext)s")
