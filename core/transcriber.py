@@ -8,7 +8,7 @@ from pydub import AudioSegment
 SARVAM_PIECE_SECONDS = 25
 
 
-WHISPER_MODEL = os.getenv("WHISPER_MODEL", "small")
+WHISPER_MODEL = os.getenv("WHISPER_MODEL", "base")
 
 
 SARVAM_API_KEY = os.getenv("SARVAM_API_KEY")
@@ -23,8 +23,9 @@ def load_model():
     global _model  
 
     if _model is None: 
-        print(f"Loading Whisper model: {WHISPER_MODEL} ...")
-        _model = whisper.load_model(WHISPER_MODEL) 
+        model_name = os.getenv("WHISPER_MODEL", WHISPER_MODEL)
+        print(f"Loading Whisper model: {model_name} ...")
+        _model = whisper.load_model(model_name) 
         print("Whisper model loaded.")
     return _model 
 
