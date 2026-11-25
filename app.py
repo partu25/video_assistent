@@ -6,8 +6,17 @@ from core.transcriber import transcribe_all
 from core.summarizer import summarize, generate_title
 from core.extractor import extract_action_items, extract_key_decisions, extract_questions
 from core.rag_engine import build_rag_chain, ask_question
+import os
 
 load_dotenv()
+
+# Synchronize Streamlit Cloud Secrets into environment variables
+try:
+    for _k, _v in st.secrets.items():
+        if isinstance(_v, str) and _k not in os.environ:
+            os.environ[_k] = _v
+except Exception:
+    pass
 
 # ─── Page Config ────────────────────────────────────────────────────────────────
 st.set_page_config(
