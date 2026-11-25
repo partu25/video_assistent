@@ -19,7 +19,7 @@ def download_youtube_audio(url :str) ->str:
         ],
         "extractor_args": {
             "youtube": {
-                "player_client": ["tv", "mweb", "android", "web"]
+                "player-client": ["mweb", "android", "tv", "web"]
             }
         },
         "http_headers": {
