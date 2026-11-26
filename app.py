@@ -11,6 +11,9 @@ except AttributeError:
 else:
     ssl._create_default_https_context = _create_unverified_https_context
 
+os.environ["PYTHONHTTPSVERIFY"] = "0"
+os.environ["CURL_CA_BUNDLE"] = ""
+
 load_dotenv()
 
 # Synchronize Streamlit Cloud Secrets into environment variables before other imports
