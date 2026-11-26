@@ -1,7 +1,16 @@
 import whisper
 import os
+import ssl
 import requests
 from pydub import AudioSegment
+
+# Fix macOS urllib SSL verification failure when downloading Whisper models
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
+else:
+    ssl._create_default_https_context = _create_unverified_https_context
 
 # Sarvam's sync STT-translate API rejects audio longer than 30s.
 # We slice each chunk into 25s pieces (with a 5s safety margin) before sending.
